@@ -46,75 +46,100 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* PolitiTrace Risk Colors */
+  --color-critical: var(--critical);
+  --color-high: var(--high);
+  --color-medium: var(--medium);
+  --color-low: var(--low);
+  --color-info: var(--info);
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  --background: hsl(220 14% 96%);
+  --foreground: hsl(220 20% 10%);
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(220 20% 10%);
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(220 20% 10%);
+  --primary: hsl(215 70% 45%);
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(180 50% 40%);
+  --secondary-foreground: hsl(0 0% 100%);
+  --muted: hsl(220 14% 92%);
+  --muted-foreground: hsl(220 10% 45%);
+  --accent: hsl(215 50% 95%);
+  --accent-foreground: hsl(215 70% 35%);
+  --destructive: hsl(0 72% 51%);
+  --border: hsl(220 14% 88%);
+  --input: hsl(220 14% 88%);
+  --ring: hsl(215 70% 45%);
+
+  /* Risk level colors */
+  --critical: hsl(0 72% 51%);
+  --high: hsl(25 95% 53%);
+  --medium: hsl(45 93% 47%);
+  --low: hsl(142 71% 45%);
+  --info: hsl(200 80% 50%);
+
+  /* Chart colors */
+  --chart-1: hsl(215 70% 45%);
+  --chart-2: hsl(180 50% 40%);
+  --chart-3: hsl(25 95% 53%);
+  --chart-4: hsl(142 71% 45%);
+  --chart-5: hsl(280 60% 55%);
+
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: hsl(220 20% 14%);
+  --sidebar-foreground: hsl(220 10% 85%);
+  --sidebar-primary: hsl(215 70% 50%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(220 20% 20%);
+  --sidebar-accent-foreground: hsl(220 10% 90%);
+  --sidebar-border: hsl(220 15% 22%);
+  --sidebar-ring: hsl(215 70% 45%);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: hsl(220 20% 8%);
+  --foreground: hsl(220 10% 92%);
+  --card: hsl(220 20% 12%);
+  --card-foreground: hsl(220 10% 92%);
+  --popover: hsl(220 20% 12%);
+  --popover-foreground: hsl(220 10% 92%);
+  --primary: hsl(215 70% 55%);
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(180 50% 45%);
+  --secondary-foreground: hsl(0 0% 100%);
+  --muted: hsl(220 15% 18%);
+  --muted-foreground: hsl(220 10% 60%);
+  --accent: hsl(220 20% 16%);
+  --accent-foreground: hsl(215 70% 65%);
+  --destructive: hsl(0 72% 60%);
+  --border: hsl(220 15% 20%);
+  --input: hsl(220 15% 20%);
+  --ring: hsl(215 70% 55%);
+
+  --critical: hsl(0 72% 60%);
+  --high: hsl(25 95% 60%);
+  --medium: hsl(45 93% 55%);
+  --low: hsl(142 71% 55%);
+  --info: hsl(200 80% 60%);
+
+  --chart-1: hsl(215 70% 55%);
+  --chart-2: hsl(180 50% 45%);
+  --chart-3: hsl(25 95% 60%);
+  --chart-4: hsl(142 71% 55%);
+  --chart-5: hsl(280 60% 60%);
+
+  --sidebar: hsl(220 25% 8%);
+  --sidebar-foreground: hsl(220 10% 80%);
+  --sidebar-primary: hsl(215 70% 55%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(220 20% 14%);
+  --sidebar-accent-foreground: hsl(220 10% 85%);
+  --sidebar-border: hsl(220 15% 15%);
+  --sidebar-ring: hsl(215 70% 55%);
 }
 
 @layer base {
@@ -127,4 +152,62 @@
   html {
     @apply font-sans;
   }
+}
+
+/* Leaflet overrides for dark mode */
+.dark .leaflet-container {
+  background: hsl(220 20% 12%);
+}
+
+.dark .leaflet-tile-pane {
+  filter: brightness(0.7) contrast(1.2) saturate(0.8);
+}
+
+/* Custom scrollbar */
+@layer base {
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(220 14% 75%);
+    border-radius: 3px;
+  }
+  .dark ::-webkit-scrollbar-thumb {
+    background: hsl(220 15% 25%);
+  }
+}
+
+/* Risk score animation */
+@keyframes pulse-critical {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.animate-pulse-critical {
+  animation: pulse-critical 2s ease-in-out infinite;
+}
+
+/* Skip to content for a11y */
+.skip-to-content {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+.skip-to-content:focus {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: auto;
+  height: auto;
+  padding: 1rem;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  z-index: 9999;
 }

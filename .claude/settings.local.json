@@ -5,7 +5,13 @@
       "Bash(npx create-next-app@latest:*)",
       "Bash(yes:*)",
       "Bash(npm install:*)",
-      "Bash(npx shadcn@latest init -d)"
+      "Bash(npx shadcn@latest init -d)",
+      "Bash(npx shadcn@latest add card badge dialog dropdown-menu input select separator sheet skeleton table tabs tooltip scroll-area command avatar progress -y)",
+      "Bash(npm run build:*)",
+      "Bash(timeout 20 npm run dev:*)",
+      "Bash(npm run dev:*)",
+      "Bash(gh auth:*)",
+      "Bash(git add:*)"
     ]
   }
 }
