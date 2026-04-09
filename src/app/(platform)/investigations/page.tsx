@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { CaseQueue } from '@/components/investigation/case-queue';
 import { EvidenceCanvas } from '@/components/investigation/evidence-canvas';
 import { IntelSummary } from '@/components/investigation/intel-summary';
@@ -17,6 +17,10 @@ export default function InvestigationsPage() {
 
   useEffect(() => {
     caseApi.getCases().then(setCases);
+  }, []);
+
+  const handleCaseCreated = useCallback((newCase: Case) => {
+    setCases(prev => [newCase, ...prev]);
   }, []);
 
   const activeCase = useMemo(
@@ -40,7 +44,7 @@ export default function InvestigationsPage() {
       <FadeIn direction="up" delay={0.1}>
         <div className="flex h-[calc(100vh-12rem)] border rounded-lg overflow-hidden bg-card">
           <div className="w-72 shrink-0">
-            <CaseQueue cases={cases} />
+            <CaseQueue cases={cases} onCaseCreated={handleCaseCreated} />
           </div>
           <EvidenceCanvas caseData={activeCase} />
           <IntelSummary caseData={activeCase} />

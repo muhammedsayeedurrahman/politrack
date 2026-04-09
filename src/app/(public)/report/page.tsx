@@ -1,13 +1,20 @@
 'use client';
 
+import { useRef, useCallback } from 'react';
 import { ComplaintForm } from '@/components/whistleblower/complaint-form';
 import { FadeIn } from '@/components/motion';
-import { Shield, ArrowLeft } from 'lucide-react';
+import { Shield, ArrowLeft, Play, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import GradientText from '@/components/reactbits/gradient-text';
 
 export default function ReportPage() {
+  const demoFnRef = useRef<(() => void) | null>(null);
+
+  const handleDemoReady = useCallback((fn: () => void) => {
+    demoFnRef.current = fn;
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -23,11 +30,26 @@ export default function ReportPage() {
               PolitiTrace
             </GradientText>
           </div>
-          <Link href="/dashboard">
-            <Button variant="ghost" size="sm" className="gap-1.5 text-xs">
-              <ArrowLeft size={14} /> Back to Platform
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5 text-xs border-emerald-500/30 text-emerald-600 hover:bg-emerald-500/10"
+              onClick={() => demoFnRef.current?.()}
+            >
+              <Play size={12} /> Auto-Fill Demo
             </Button>
-          </Link>
+            <Link href="/track">
+              <Button variant="ghost" size="sm" className="gap-1.5 text-xs">
+                <Search size={14} /> Track Report
+              </Button>
+            </Link>
+            <Link href="/dashboard">
+              <Button variant="ghost" size="sm" className="gap-1.5 text-xs">
+                <ArrowLeft size={14} /> Back to Platform
+              </Button>
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -47,7 +69,7 @@ export default function ReportPage() {
         </FadeIn>
 
         <FadeIn direction="up" delay={0.1}>
-          <ComplaintForm />
+          <ComplaintForm onDemoReady={handleDemoReady} />
         </FadeIn>
       </main>
     </div>

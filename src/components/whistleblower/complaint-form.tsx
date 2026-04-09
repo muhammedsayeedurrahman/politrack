@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -62,12 +62,62 @@ function generateTrackingCode(): string {
   return `WB-${year}-${code}`;
 }
 
-export function ComplaintForm() {
+const DEMO_DATA: FormData = {
+  category: 'procurement_fraud',
+  what: 'I witnessed bid manipulation in the Department of Public Works infrastructure project #PW-2026-1087. Three companies — BuildCorp Ltd, Metro Contractors, and PrimeSteel Inc — appear to be coordinating their tender submissions. The winning bid always rotates between them while maintaining inflated prices approximately 40% above market rates. I have internal emails suggesting the department head, Director James Okonkwo, is receiving monthly payments from BuildCorp through a shell company called Apex Consulting registered to his brother-in-law.',
+  when: 'January 2026 - Present (ongoing)',
+  where: 'Department of Public Works, Regional Office - Floor 12',
+  who: 'Director James Okonkwo (Dept. Head), BuildCorp Ltd (CEO: Sarah Chen), Metro Contractors, PrimeSteel Inc, Apex Consulting (shell)',
+  additionalDetails: 'I have copies of internal procurement memos showing pre-determined scoring criteria designed to favour these three companies. The contract values involved exceed $12M across 4 projects in the last fiscal year.',
+};
+
+interface ComplaintFormProps {
+  onDemoReady?: (runDemo: () => void) => void;
+}
+
+export function ComplaintForm({ onDemoReady }: ComplaintFormProps) {
   const [step, setStep] = useState(0);
   const [formData, setFormData] = useState<FormData>(INITIAL_FORM);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [trackingCode, setTrackingCode] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [isDemoFilling, setIsDemoFilling] = useState(false);
+
+  const runDemo = useCallback(async () => {
+    setIsDemoFilling(true);
+    setStep(0);
+    setFormData(INITIAL_FORM);
+
+    // Step 0: Select category with typing effect
+    await new Promise((r) => setTimeout(r, 400));
+    setFormData((prev) => ({ ...prev, category: DEMO_DATA.category }));
+    await new Promise((r) => setTimeout(r, 600));
+    setStep(1);
+
+    // Step 1: Fill description field character-by-character (fast)
+    const fields: (keyof FormData)[] = ['what', 'when', 'where', 'who', 'additionalDetails'];
+    for (const field of fields) {
+      const value = DEMO_DATA[field];
+      if (!value) continue;
+      const chunks = Math.ceil(value.length / 8);
+      for (let i = 1; i <= chunks; i++) {
+        const partial = value.slice(0, i * 8);
+        setFormData((prev) => ({ ...prev, [field]: partial }));
+        await new Promise((r) => setTimeout(r, 20));
+      }
+      setFormData((prev) => ({ ...prev, [field]: value }));
+      await new Promise((r) => setTimeout(r, 200));
+    }
+
+    await new Promise((r) => setTimeout(r, 500));
+    setStep(2);
+    await new Promise((r) => setTimeout(r, 800));
+    setIsDemoFilling(false);
+  }, []);
+
+  useEffect(() => {
+    onDemoReady?.(runDemo);
+  }, [onDemoReady, runDemo]);
 
   const canProceed = useCallback((): boolean => {
     if (step === 0) return formData.category !== null;

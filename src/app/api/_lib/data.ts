@@ -203,6 +203,43 @@ export function addCaseComment(id: string, comment: string, user: string): Case 
   return updated;
 }
 
+export function createCase(data: {
+  title: string;
+  summary: string;
+  priority: AlertPriority;
+  assignee?: string;
+  tags?: string[];
+}): Case {
+  const now = new Date().toISOString();
+  const id = `case-${Date.now().toString(36)}`;
+  const newCase: Case = {
+    id,
+    title: data.title,
+    status: 'new',
+    priority: data.priority,
+    assignee: data.assignee ?? 'Unassigned',
+    entityIds: [],
+    alertIds: [],
+    summary: data.summary,
+    riskScore: data.priority === 'critical' ? 85 : data.priority === 'high' ? 65 : data.priority === 'medium' ? 45 : 25,
+    createdAt: now,
+    updatedAt: now,
+    evidence: [],
+    activities: [
+      {
+        id: `act-${Date.now()}`,
+        type: 'created',
+        description: 'Case created.',
+        user: 'System',
+        timestamp: now,
+      },
+    ],
+    tags: data.tags ?? [],
+  };
+  cases = [newCase, ...cases];
+  return newCase;
+}
+
 // ---------------------------------------------------------------------------
 // Entities
 // ---------------------------------------------------------------------------
