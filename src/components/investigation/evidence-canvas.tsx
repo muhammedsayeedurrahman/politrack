@@ -6,7 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useInvestigationStore } from '@/stores/investigation-store';
 import { Case } from '@/types';
-import { FileText, Network, Clock, File, MessageSquare, Receipt, BarChart3 } from 'lucide-react';
+import { FileText, Network, Clock, File, MessageSquare, Receipt, BarChart3, FileDown } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { TimeAgo } from '@/components/shared/time-ago';
 import { EmptyState } from '@/components/shared/empty-state';
 import { CaseTimeline } from '@/components/investigation/case-timeline';
@@ -37,8 +38,34 @@ export function EvidenceCanvas({ caseData }: EvidenceCanvasProps) {
   return (
     <div className="flex-1 flex flex-col min-w-0">
       <div className="p-4 border-b">
-        <h2 className="text-lg font-semibold">{caseData.title}</h2>
-        <p className="text-sm text-muted-foreground mt-0.5">{caseData.summary}</p>
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <h2 className="text-lg font-semibold">{caseData.title}</h2>
+            <p className="text-sm text-muted-foreground mt-0.5">{caseData.summary}</p>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1.5 text-xs shrink-0"
+            onClick={() => {
+              fetch(`/api/reports/case/${caseData.id}`)
+                .then((res) => res.blob())
+                .then((blob) => {
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `PolitiTrace-${caseData.id}-Report.pdf`;
+                  document.body.appendChild(a);
+                  a.click();
+                  a.remove();
+                  URL.revokeObjectURL(url);
+                });
+            }}
+          >
+            <FileDown size={12} />
+            View Full Report
+          </Button>
+        </div>
       </div>
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)} className="flex-1 flex flex-col">
         <TabsList className="mx-4 mt-2 w-fit" aria-label="Evidence views">

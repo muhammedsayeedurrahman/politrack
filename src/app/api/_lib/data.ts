@@ -428,6 +428,87 @@ export function getEdgesByNode(nodeId: string): GraphEdge[] {
 }
 
 // ---------------------------------------------------------------------------
+// Complaints (Whistleblower Reports)
+// ---------------------------------------------------------------------------
+
+export type ComplaintStatus = 'received' | 'under_review' | 'investigating' | 'resolved' | 'dismissed';
+
+export interface Complaint {
+  trackingCode: string;
+  category: string;
+  what: string;
+  when: string;
+  where: string;
+  who: string;
+  additionalDetails: string;
+  status: ComplaintStatus;
+  submittedAt: string;
+  updatedAt: string;
+  timeline: { status: ComplaintStatus; timestamp: string; note: string }[];
+}
+
+const complaints: Complaint[] = [];
+
+function generateTrackingCode(): string {
+  const year = new Date().getFullYear();
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let code = '';
+  for (let i = 0; i < 6; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return `WB-${year}-${code}`;
+}
+
+export function createComplaint(data: {
+  category: string;
+  what: string;
+  when?: string;
+  where?: string;
+  who?: string;
+  additionalDetails?: string;
+}): Complaint {
+  const now = new Date().toISOString();
+  const trackingCode = generateTrackingCode();
+  const complaint: Complaint = {
+    trackingCode,
+    category: data.category,
+    what: data.what,
+    when: data.when ?? '',
+    where: data.where ?? '',
+    who: data.who ?? '',
+    additionalDetails: data.additionalDetails ?? '',
+    status: 'received',
+    submittedAt: now,
+    updatedAt: now,
+    timeline: [
+      { status: 'received', timestamp: now, note: 'Report received and logged securely. Assigned tracking code.' },
+    ],
+  };
+  complaints.push(complaint);
+
+  // Simulate auto-progression: after creation, add review step
+  const reviewTime = new Date(Date.now() + 2000).toISOString();
+  setTimeout(() => {
+    const c = complaints.find((x) => x.trackingCode === trackingCode);
+    if (c && c.status === 'received') {
+      c.status = 'under_review';
+      c.updatedAt = reviewTime;
+      c.timeline.push({
+        status: 'under_review',
+        timestamp: reviewTime,
+        note: 'AI triage agent has classified the report and assigned it for review.',
+      });
+    }
+  }, 2000);
+
+  return complaint;
+}
+
+export function getComplaintByTrackingCode(trackingCode: string): Complaint | null {
+  return complaints.find((c) => c.trackingCode === trackingCode) ?? null;
+}
+
+// ---------------------------------------------------------------------------
 // Re-export raw data for AI services that need direct access
 // ---------------------------------------------------------------------------
 

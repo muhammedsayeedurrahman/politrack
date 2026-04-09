@@ -18,7 +18,10 @@ import {
   ServerCrash,
   Copy,
   AlertTriangle,
+  FileDown,
+  Search,
 } from 'lucide-react';
+import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
 const CATEGORIES = [
@@ -134,6 +137,37 @@ export function ComplaintForm() {
               <span className="flex items-center gap-1"><Lock size={10} /> Encrypted</span>
               <span className="flex items-center gap-1"><EyeOff size={10} /> Anonymous</span>
               <span className="flex items-center gap-1"><Shield size={10} /> Protected</span>
+            </div>
+
+            <div className="flex gap-3 justify-center">
+              <Link href={`/track?code=${encodeURIComponent(trackingCode)}`}>
+                <Button variant="outline" size="sm" className="gap-1.5 text-xs">
+                  <Search size={12} />
+                  Track Report Status
+                </Button>
+              </Link>
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1.5 text-xs"
+                onClick={() => {
+                  fetch(`/api/reports/complaint?code=${encodeURIComponent(trackingCode)}`)
+                    .then((res) => res.blob())
+                    .then((blob) => {
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = `PolitiTrace-${trackingCode}-Report.pdf`;
+                      document.body.appendChild(a);
+                      a.click();
+                      a.remove();
+                      URL.revokeObjectURL(url);
+                    });
+                }}
+              >
+                <FileDown size={12} />
+                Download PDF Report
+              </Button>
             </div>
           </CardContent>
         </Card>
