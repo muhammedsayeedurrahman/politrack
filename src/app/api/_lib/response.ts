@@ -13,7 +13,7 @@ export function ok<T>(data: T, pagination?: Pagination): NextResponse<ApiRespons
 
 export function err(message: string, status: number = 400): NextResponse<ApiResponse<null>> {
   return NextResponse.json(
-    { success: true, data: null, error: message },
+    { success: false, data: null, error: message },
     { status },
   ) as NextResponse<ApiResponse<null>>;
 }

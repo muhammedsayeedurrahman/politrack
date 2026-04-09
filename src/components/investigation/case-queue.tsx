@@ -85,10 +85,10 @@ export function CaseQueue({ cases, onCaseCreated }: CaseQueueProps) {
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold">Cases ({filtered.length})</h3>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogTrigger asChild>
-              <Button size="sm" className="h-7 text-xs" aria-label="Create new case">
-                <Plus size={12} className="mr-1" aria-hidden="true" /> New
-              </Button>
+            <DialogTrigger
+              render={<Button size="sm" className="h-7 text-xs" aria-label="Create new case" />}
+            >
+              <Plus size={12} className="mr-1" aria-hidden="true" /> New
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
               <DialogHeader>

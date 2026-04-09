@@ -1,0 +1,25 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "buildCommand": "next build",
+  "functions": {
+    "src/app/api/reports/case/[caseId]/route.ts": {
+      "maxDuration": 30
+    },
+    "src/app/api/reports/complaint/route.ts": {
+      "maxDuration": 30
+    },
+    "src/app/api/ai/stream/route.ts": {
+      "maxDuration": 60
+    },
+    "src/app/api/ai/analysis/**/route.ts": {
+      "maxDuration": 30
+    },
+    "src/app/api/ai/briefing/route.ts": {
+      "maxDuration": 30
+    },
+    "src/app/api/ai/response/route.ts": {
+      "maxDuration": 30
+    }
+  }
+}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { Suspense, useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -78,6 +78,14 @@ function formatDate(iso: string): string {
 }
 
 export default function TrackPage() {
+  return (
+    <Suspense>
+      <TrackPageContent />
+    </Suspense>
+  );
+}
+
+function TrackPageContent() {
   const searchParams = useSearchParams();
   const [code, setCode] = useState(searchParams.get('code') ?? '');
   const [isLoading, setIsLoading] = useState(false);
