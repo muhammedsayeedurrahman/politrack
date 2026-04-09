@@ -7,14 +7,16 @@ import { IntelSummary } from '@/components/investigation/intel-summary';
 import { ActivityLog } from '@/components/investigation/activity-log';
 import { useInvestigationStore } from '@/stores/investigation-store';
 import { Case } from '@/types';
-import { caseService } from '@/services/case-service';
+import { caseApi } from '@/services/api/case-api';
+import { FadeIn } from '@/components/motion';
+import BlurText from '@/components/reactbits/blur-text';
 
 export default function InvestigationsPage() {
   const [cases, setCases] = useState<Case[]>([]);
   const { activeCaseId } = useInvestigationStore();
 
   useEffect(() => {
-    caseService.getCases().then(setCases);
+    caseApi.getCases().then(setCases);
   }, []);
 
   const activeCase = useMemo(
@@ -24,18 +26,29 @@ export default function InvestigationsPage() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Investigations</h1>
-        <p className="text-sm text-muted-foreground">Manage and investigate corruption cases</p>
-      </div>
-      <div className="flex h-[calc(100vh-12rem)] border rounded-lg overflow-hidden bg-card">
-        <div className="w-72 shrink-0">
-          <CaseQueue cases={cases} />
+      <FadeIn direction="none">
+        <div>
+          <BlurText
+            text="Investigations"
+            className="text-2xl font-bold tracking-tight"
+            delay={80}
+            animateBy="letters"
+          />
+          <p className="text-sm text-muted-foreground">Manage and investigate corruption cases</p>
         </div>
-        <EvidenceCanvas caseData={activeCase} />
-        <IntelSummary caseData={activeCase} />
-      </div>
-      <ActivityLog caseData={activeCase} />
+      </FadeIn>
+      <FadeIn direction="up" delay={0.1}>
+        <div className="flex h-[calc(100vh-12rem)] border rounded-lg overflow-hidden bg-card">
+          <div className="w-72 shrink-0">
+            <CaseQueue cases={cases} />
+          </div>
+          <EvidenceCanvas caseData={activeCase} />
+          <IntelSummary caseData={activeCase} />
+        </div>
+      </FadeIn>
+      <FadeIn direction="up" delay={0.15}>
+        <ActivityLog caseData={activeCase} />
+      </FadeIn>
     </div>
   );
 }

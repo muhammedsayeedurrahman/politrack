@@ -9,6 +9,7 @@ import { Case } from '@/types';
 import { FileText, Network, Clock, File, MessageSquare, Receipt, BarChart3 } from 'lucide-react';
 import { TimeAgo } from '@/components/shared/time-ago';
 import { EmptyState } from '@/components/shared/empty-state';
+import { CaseTimeline } from '@/components/investigation/case-timeline';
 import { cn } from '@/lib/utils';
 
 const EVIDENCE_ICONS = {
@@ -84,26 +85,7 @@ export function EvidenceCanvas({ caseData }: EvidenceCanvasProps) {
           </div>
         </TabsContent>
         <TabsContent value="timeline" className="flex-1 m-0">
-          <ScrollArea className="h-full" aria-label="Case timeline">
-            <div className="p-4">
-              <div className="relative pl-6 space-y-4 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-px before:bg-border" role="list" aria-label="Timeline events">
-                {caseData.activities.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()).map(activity => (
-                  <div key={activity.id} className="relative" role="listitem">
-                    <div className="absolute -left-6 top-1 h-4 w-4 rounded-full border-2 border-background bg-primary" aria-hidden="true" />
-                    <div className="text-sm">
-                      <p className="font-medium">{activity.description}</p>
-                      <div className="flex items-center gap-2 mt-0.5 text-xs text-muted-foreground">
-                        <span>{activity.user}</span>
-                        <span>·</span>
-                        <TimeAgo timestamp={activity.timestamp} />
-                        <Badge variant="outline" className="text-[10px] capitalize">{activity.type.replace('_', ' ')}</Badge>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </ScrollArea>
+          <CaseTimeline caseData={caseData} />
         </TabsContent>
       </Tabs>
     </div>

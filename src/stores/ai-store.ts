@@ -22,6 +22,8 @@ interface AIState {
   selectedEntityId: string | null;
   selectedCaseId: string | null;
   onboardingDismissed: boolean;
+  activeAgent: string | null;
+  agentSteps: string[];
 }
 
 interface AIActions {
@@ -37,6 +39,9 @@ interface AIActions {
   clearMessages: () => void;
   dismissOnboarding: () => void;
   resetOnboarding: () => void;
+  setActiveAgent: (agent: string | null) => void;
+  addAgentStep: (step: string) => void;
+  clearAgentSteps: () => void;
 }
 
 export const useAIStore = create<AIState & AIActions>((set) => ({
@@ -48,6 +53,8 @@ export const useAIStore = create<AIState & AIActions>((set) => ({
   selectedEntityId: null,
   selectedCaseId: null,
   onboardingDismissed: false,
+  activeAgent: null,
+  agentSteps: [],
 
   togglePanel: () => set((state) => ({ panelOpen: !state.panelOpen })),
   setPanelOpen: (open) => set({ panelOpen: open }),
@@ -72,4 +79,7 @@ export const useAIStore = create<AIState & AIActions>((set) => ({
   clearMessages: () => set({ messages: [], streamingContent: '' }),
   dismissOnboarding: () => set({ onboardingDismissed: true }),
   resetOnboarding: () => set({ onboardingDismissed: false }),
+  setActiveAgent: (agent) => set({ activeAgent: agent }),
+  addAgentStep: (step) => set((state) => ({ agentSteps: [...state.agentSteps, step] })),
+  clearAgentSteps: () => set({ agentSteps: [] }),
 }));

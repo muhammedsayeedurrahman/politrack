@@ -1,15 +1,15 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
-import { detectNetworkPatterns, type AINetworkPattern } from '@/services/ai-analysis-service';
+import { aiAnalysisApi } from '@/services/api/ai-analysis-api';
+import type { AINetworkPattern } from '@/services/ai-analysis-service';
 import { useGraphStore } from '@/stores/graph-store';
 import type { GraphNode, GraphEdge } from '@/types';
-import { Sparkles, Network, AlertTriangle, Link2, Hexagon, HelpCircle } from 'lucide-react';
+import { Sparkles, Network, Link2, Hexagon, HelpCircle, Shield, Wrench } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface NetworkInsightsProps {
@@ -39,10 +39,11 @@ const SEVERITY_DOT = {
 export function NetworkInsights({ nodes, edges }: NetworkInsightsProps) {
   const selectNode = useGraphStore((s) => s.selectNode);
 
-  const patterns: AINetworkPattern[] = useMemo(
-    () => detectNetworkPatterns(nodes, edges),
-    [nodes, edges],
-  );
+  const { data: patterns = [] } = useQuery({
+    queryKey: ['ai', 'network-patterns', nodes.length, edges.length],
+    queryFn: () => aiAnalysisApi.detectNetworkPatterns(nodes, edges),
+    enabled: nodes.length > 0,
+  });
 
   if (patterns.length === 0) return null;
 
@@ -56,10 +57,22 @@ export function NetworkInsights({ nodes, edges }: NetworkInsightsProps) {
         <p className="text-[10px] text-muted-foreground">
           {patterns.length} patterns detected across {nodes.length} entities
         </p>
-        <div className="rounded-md bg-muted/40 px-2.5 py-1.5 mt-1">
+        <div className="rounded-md bg-primary/5 border border-primary/15 px-2.5 py-1.5 mt-1 space-y-1.5">
+          <div className="flex items-center gap-1.5">
+            <Shield size={9} className="text-primary" />
+            <span className="text-[9px] font-semibold text-primary uppercase tracking-wider">Network Analyst Agent</span>
+          </div>
           <p className="text-[10px] text-muted-foreground leading-relaxed">
-            The AI scans all connections in the graph to find hidden patterns — hub entities, high-risk clusters, and suspicious official-corporate links. Click any entity name to jump to it.
+            Scans all connections to detect hub entities, high-risk clusters, and suspicious official-corporate links.
           </p>
+          <div className="flex flex-wrap gap-1">
+            {['detect_communities', 'calculate_centrality', 'detect_hubs', 'detect_conflict_of_interest'].map((tool) => (
+              <span key={tool} className="inline-flex items-center gap-0.5 rounded bg-muted px-1 py-0.5 text-[8px] font-mono text-muted-foreground">
+                <Wrench size={7} />
+                {tool}
+              </span>
+            ))}
+          </div>
         </div>
       </CardHeader>
       <ScrollArea className="flex-1">

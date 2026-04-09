@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
@@ -9,24 +10,38 @@ import { Progress } from '@/components/ui/progress';
 import { RiskIndicator } from '@/components/shared/risk-indicator';
 import { Case } from '@/types';
 import { getRiskLevel } from '@/lib/constants';
-import { generateCaseAnalysis, type AICaseAnalysis } from '@/services/ai-analysis-service';
-import { Brain, CheckCircle2, Circle, RefreshCw, Sparkles, AlertTriangle, TrendingUp } from 'lucide-react';
+import { aiAnalysisApi } from '@/services/api/ai-analysis-api';
+import { Brain, Circle, RefreshCw, Sparkles, AlertTriangle, TrendingUp, Wrench, Shield, Zap, FileDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
+
+function downloadReport(caseId: string) {
+  fetch(`/api/reports/case/${caseId}`)
+    .then((res) => res.blob())
+    .then((blob) => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `PolitiTrace-${caseId}-Report.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    });
+}
 
 interface IntelSummaryProps {
   caseData: Case | null;
 }
 
 export function IntelSummary({ caseData }: IntelSummaryProps) {
-  const [regenerateKey, setRegenerateKey] = useState(0);
   const [isRegenerating, setIsRegenerating] = useState(false);
+  const queryClient = useQueryClient();
 
-  const analysis: AICaseAnalysis | null = useMemo(() => {
-    if (!caseData) return null;
-    // regenerateKey forces re-computation
-    void regenerateKey;
-    return generateCaseAnalysis(caseData);
-  }, [caseData, regenerateKey]);
+  const { data: analysis } = useQuery({
+    queryKey: ['ai', 'case-analysis', caseData?.id],
+    queryFn: () => aiAnalysisApi.generateCaseAnalysis(caseData!.id),
+    enabled: !!caseData,
+  });
 
   if (!caseData || !analysis) return null;
 
@@ -35,14 +50,14 @@ export function IntelSummary({ caseData }: IntelSummaryProps) {
   const handleRegenerate = () => {
     setIsRegenerating(true);
     setTimeout(() => {
-      setRegenerateKey((k) => k + 1);
+      queryClient.invalidateQueries({ queryKey: ['ai', 'case-analysis', caseData.id] });
       setIsRegenerating(false);
     }, 1200);
   };
 
   return (
     <div className="w-72 shrink-0 border-l flex flex-col">
-      <div className="p-3 border-b">
+      <div className="p-3 border-b space-y-2">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold flex items-center gap-2">
             <Brain size={16} className="text-primary" />
@@ -70,6 +85,33 @@ export function IntelSummary({ caseData }: IntelSummaryProps) {
               analysis.confidence >= 85 ? 'bg-low' : analysis.confidence >= 70 ? 'bg-medium' : 'bg-high',
             )}
           />
+        </div>
+
+        {/* Export PDF Button */}
+        <Button
+          variant="outline"
+          size="sm"
+          className="w-full gap-1.5 text-xs"
+          onClick={() => downloadReport(caseData.id)}
+        >
+          <FileDown size={12} />
+          Export PDF Report
+        </Button>
+
+        {/* Agent attribution */}
+        <div className="rounded-md bg-primary/5 border border-primary/15 px-2 py-1.5">
+          <div className="flex items-center gap-1.5 mb-1">
+            <Shield size={9} className="text-primary" />
+            <span className="text-[9px] font-semibold text-primary uppercase tracking-wider">Investigation Agent</span>
+          </div>
+          <div className="flex flex-wrap gap-1">
+            {['get_case_details', 'query_entities', 'calculate_entity_risk', 'build_case_timeline'].map((tool) => (
+              <span key={tool} className="inline-flex items-center gap-0.5 rounded bg-muted px-1 py-0.5 text-[8px] font-mono text-muted-foreground">
+                <Wrench size={7} />
+                {tool}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
 

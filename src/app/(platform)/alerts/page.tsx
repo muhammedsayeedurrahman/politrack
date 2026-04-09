@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { alertService } from '@/services/alert-service';
+import { alertApi } from '@/services/api/alert-api';
+import { aiAnalysisApi } from '@/services/api/ai-analysis-api';
 import { DataTable, Column } from '@/components/shared/data-table';
 import { PriorityBadge } from '@/components/shared/priority-badge';
 import { EntityIcon } from '@/components/shared/entity-icon';
@@ -13,9 +14,12 @@ import { AlertInsights } from '@/components/ai/alert-insights';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertPriority } from '@/types';
-import { triageAlert } from '@/services/ai-analysis-service';
-import { Search, Download } from 'lucide-react';
+import type { AITriageResult } from '@/services/ai-analysis-service';
+import { MdSearch, MdFileDownload } from 'react-icons/md';
 import { useDebounce } from '@/lib/hooks/use-debounce';
+import { FadeIn } from '@/components/motion';
+import { AutomationRules } from '@/components/alerts/automation-rules';
+import BlurText from '@/components/reactbits/blur-text';
 
 export default function AlertsPage() {
   const [search, setSearch] = useState('');
@@ -26,22 +30,27 @@ export default function AlertsPage() {
   const { data: alerts = [], isLoading } = useQuery({
     queryKey: ['alerts', 'all', priorityFilter, debouncedSearch],
     queryFn: () =>
-      alertService.getAlerts({
+      alertApi.getAlerts({
         priority: priorityFilter.length > 0 ? priorityFilter : undefined,
         search: debouncedSearch || undefined,
       }),
   });
 
-  // Pre-compute triage results for visible alerts
-  const triageMap = useMemo(() => {
-    const map = new Map<string, ReturnType<typeof triageAlert>>();
-    for (const alert of alerts) {
-      if (!alert.isDismissed) {
-        map.set(alert.id, triageAlert(alert));
+  const { data: triageMap = new Map<string, AITriageResult>() } = useQuery({
+    queryKey: ['alerts', 'triage', alerts.map((a) => a.id).join(',')],
+    queryFn: async () => {
+      const map = new Map<string, AITriageResult>();
+      const nonDismissed = alerts.filter((a) => !a.isDismissed);
+      const results = await Promise.all(
+        nonDismissed.map((alert) => aiAnalysisApi.triageAlert(alert)),
+      );
+      for (const result of results) {
+        map.set(result.alertId, result);
       }
-    }
-    return map;
-  }, [alerts]);
+      return map;
+    },
+    enabled: alerts.length > 0,
+  });
 
   const togglePriority = (p: AlertPriority) => {
     setPriorityFilter((prev) =>
@@ -51,7 +60,7 @@ export default function AlertsPage() {
 
   const handleDismiss = useCallback(
     async (id: string) => {
-      await alertService.dismiss(id);
+      await alertApi.dismiss(id);
       queryClient.invalidateQueries({ queryKey: ['alerts'] });
     },
     [queryClient]
@@ -154,53 +163,71 @@ export default function AlertsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Alerts</h1>
-          <p className="text-sm text-muted-foreground">
-            All corruption alerts — {visibleAlerts.length} total
-          </p>
+      <FadeIn direction="none">
+        <div className="flex items-center justify-between">
+          <div>
+            <BlurText
+              text="Alerts"
+              className="text-2xl font-bold tracking-tight"
+              delay={80}
+              animateBy="letters"
+            />
+            <p className="text-sm text-muted-foreground">
+              All corruption alerts — {visibleAlerts.length} total
+            </p>
+          </div>
+          <Button variant="outline" size="sm">
+            <MdFileDownload size={14} className="mr-1" /> Export
+          </Button>
         </div>
-        <Button variant="outline" size="sm">
-          <Download size={14} className="mr-1" /> Export
-        </Button>
-      </div>
+      </FadeIn>
 
-      {/* AI Insights Section */}
-      {!isLoading && alerts.length > 0 && <AlertInsights alerts={alerts} />}
+      <FadeIn direction="up" delay={0.08}>
+        <AutomationRules />
+      </FadeIn>
 
-      <div className="flex items-center gap-3">
-        <div className="relative flex-1 max-w-sm">
-          <Search size={14} className="absolute left-2.5 top-2.5 text-muted-foreground" />
-          <Input
-            placeholder="Search alerts..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-8 h-9"
-          />
+      {!isLoading && alerts.length > 0 && (
+        <FadeIn direction="up" delay={0.1}>
+          <AlertInsights alerts={alerts} />
+        </FadeIn>
+      )}
+
+      <FadeIn direction="up" delay={0.15}>
+        <div className="flex items-center gap-3">
+          <div className="relative flex-1 max-w-sm">
+            <MdSearch size={14} className="absolute left-2.5 top-2.5 text-muted-foreground" />
+            <Input
+              placeholder="Search alerts..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-8 h-9"
+            />
+          </div>
+          <div className="flex gap-1">
+            {priorities.map((p) => (
+              <Button
+                key={p}
+                size="sm"
+                variant={priorityFilter.includes(p) ? 'default' : 'outline'}
+                className="h-8 text-xs capitalize"
+                onClick={() => togglePriority(p)}
+              >
+                {p}
+              </Button>
+            ))}
+          </div>
         </div>
-        <div className="flex gap-1">
-          {priorities.map((p) => (
-            <Button
-              key={p}
-              size="sm"
-              variant={priorityFilter.includes(p) ? 'default' : 'outline'}
-              className="h-8 text-xs capitalize"
-              onClick={() => togglePriority(p)}
-            >
-              {p}
-            </Button>
-          ))}
-        </div>
-      </div>
+      </FadeIn>
 
-      <DataTable
-        data={visibleAlerts}
-        columns={columns}
-        keyExtractor={(a) => a.id}
-        pageSize={15}
-        emptyMessage="No alerts match your filters"
-      />
+      <FadeIn direction="up" delay={0.2}>
+        <DataTable
+          data={visibleAlerts}
+          columns={columns}
+          keyExtractor={(a) => a.id}
+          pageSize={15}
+          emptyMessage="No alerts match your filters"
+        />
+      </FadeIn>
     </div>
   );
 }

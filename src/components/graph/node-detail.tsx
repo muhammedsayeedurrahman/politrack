@@ -1,6 +1,7 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -11,8 +12,9 @@ import { RiskIndicator } from '@/components/shared/risk-indicator';
 import { useGraphStore } from '@/stores/graph-store';
 import { GraphNode, GraphEdge } from '@/types';
 import { getRiskLevel, ENTITY_TYPE_CONFIG } from '@/lib/constants';
-import { explainNode } from '@/services/ai-analysis-service';
-import { X, ExternalLink, Sparkles, TrendingUp } from 'lucide-react';
+import { aiAnalysisApi } from '@/services/api/ai-analysis-api';
+import { X, ExternalLink, Sparkles, TrendingUp, Shield } from 'lucide-react';
+import { EntityScreening } from '@/components/graph/entity-screening';
 import { cn } from '@/lib/utils';
 
 interface NodeDetailProps {
@@ -22,6 +24,7 @@ interface NodeDetailProps {
 
 export function NodeDetail({ nodes, edges }: NodeDetailProps) {
   const { selectedNodeId, selectNode } = useGraphStore();
+  const [showScreening, setShowScreening] = useState(false);
 
   const node = useMemo(() => nodes.find(n => n.data.id === selectedNodeId), [nodes, selectedNodeId]);
 
@@ -37,17 +40,18 @@ export function NodeDetail({ nodes, edges }: NodeDetailProps) {
       .filter(c => c.target);
   }, [edges, nodes, selectedNodeId]);
 
-  const aiExplanation = useMemo(() => {
-    if (!selectedNodeId) return null;
-    return explainNode(selectedNodeId, nodes, edges);
-  }, [selectedNodeId, nodes, edges]);
+  const { data: aiExplanation } = useQuery({
+    queryKey: ['ai', 'node-explain', selectedNodeId, nodes.length, edges.length],
+    queryFn: () => aiAnalysisApi.explainNode(selectedNodeId!, nodes, edges),
+    enabled: !!selectedNodeId,
+  });
 
   if (!node || !selectedNodeId) return null;
 
   const riskLevel = getRiskLevel(node.data.riskScore);
 
   return (
-    <Card className="w-80 shrink-0 flex flex-col max-h-full">
+    <Card className="w-80 shrink-0 flex flex-col max-h-full glass-card !rounded-2xl">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-sm font-medium">Entity Detail</CardTitle>
@@ -152,11 +156,29 @@ export function NodeDetail({ nodes, edges }: NodeDetailProps) {
             </div>
           </div>
 
-          <Button className="w-full mt-4" size="sm">
+          <Button
+            variant="outline"
+            className="w-full mt-3"
+            size="sm"
+            onClick={() => setShowScreening(true)}
+          >
+            <Shield size={14} className="mr-1" /> Screen Entity
+          </Button>
+          <Button className="w-full mt-2" size="sm">
             <ExternalLink size={14} className="mr-1" /> Open Investigation
           </Button>
         </CardContent>
       </ScrollArea>
+
+      {/* Screening Panel */}
+      {showScreening && (
+        <EntityScreening
+          entityId={node.data.id}
+          entityName={node.data.label}
+          entityType={node.data.type}
+          onClose={() => setShowScreening(false)}
+        />
+      )}
     </Card>
   );
 }

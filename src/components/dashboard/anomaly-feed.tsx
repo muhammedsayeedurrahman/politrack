@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertCard } from './alert-card';
 import { FilterChips } from '@/components/shared/filter-chips';
 import { EmptyState } from '@/components/shared/empty-state';
-import { alertService } from '@/services/alert-service';
+import { alertApi } from '@/services/api/alert-api';
 import { useDashboardStore } from '@/stores/dashboard-store';
 import { AlertPriority } from '@/types';
 import { Bell, Filter } from 'lucide-react';
@@ -18,7 +18,7 @@ export function AnomalyFeed() {
 
   const { data: alerts = [], isLoading } = useQuery({
     queryKey: ['alerts', selectedPriorities, selectedEntityTypes],
-    queryFn: () => alertService.getAlerts({
+    queryFn: () => alertApi.getAlerts({
       priority: selectedPriorities.length > 0 ? selectedPriorities : undefined,
       entityType: selectedEntityTypes.length > 0 ? selectedEntityTypes : undefined,
     }),
@@ -30,7 +30,7 @@ export function AnomalyFeed() {
   ];
 
   const handleDismiss = useCallback(async (id: string) => {
-    await alertService.dismiss(id);
+    await alertApi.dismiss(id);
     queryClient.invalidateQueries({ queryKey: ['alerts'] });
   }, [queryClient]);
 

@@ -8,12 +8,15 @@ import { CopilotToggle } from '@/components/ai/copilot-toggle';
 import { AIOnboarding } from '@/components/ai/ai-onboarding';
 import { useWebSocket } from '@/lib/hooks/use-websocket';
 import { useUIStore } from '@/stores/ui-store';
+import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { PageTransition } from '@/components/motion';
+import ClickSpark from '@/components/reactbits/click-spark';
 
 export default function PlatformLayout({ children }: { children: React.ReactNode }) {
   const collapsed = useUIStore((s) => s.sidebarCollapsed);
+  const pathname = usePathname();
 
-  // Simulate real-time alerts
   useWebSocket({ enabled: true, interval: 20000 });
 
   return (
@@ -30,7 +33,13 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
         role="main"
         aria-label="Main content"
       >
-        <div className="p-4 sm:p-6">{children}</div>
+        <ClickSpark sparkColor="var(--primary)" sparkSize={8} sparkRadius={20} sparkCount={6} duration={350}>
+          <div className="p-4 sm:p-6">
+            <PageTransition pageKey={pathname}>
+              {children}
+            </PageTransition>
+          </div>
+        </ClickSpark>
       </main>
       <SearchCommand />
       <CopilotPanel />

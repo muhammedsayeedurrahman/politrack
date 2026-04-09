@@ -8,40 +8,43 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useTheme } from 'next-themes';
 import { useAIStore } from '@/stores/ai-store';
-import { Moon, Sun, Monitor, Bell, Shield, User, Palette, Bot, Sparkles, ShieldAlert, Brain, Filter, Network, Keyboard, ArrowRight } from 'lucide-react';
+import { Moon, Sun, Monitor } from 'lucide-react';
+import { MdNotifications, MdShield, MdPerson, MdPalette, MdSmartToy, MdAutoAwesome, MdGppMaybe, MdPsychology, MdFilterAlt, MdHub, MdKeyboard, MdArrowForward } from 'react-icons/md';
 import { cn } from '@/lib/utils';
+import { FadeIn, StaggerList, StaggerItem } from '@/components/motion';
+import BlurText from '@/components/reactbits/blur-text';
 
 const AI_FEATURES = [
   {
-    icon: Bot,
+    icon: MdSmartToy,
     title: 'AI Copilot',
     location: 'Floating button (bottom-right) or Ctrl+J',
     description: 'A chat assistant available on every page. It understands which page you\'re on and what case, entity, or alert you\'re looking at. Ask it questions in plain language like "analyze this case" or "which alerts should I escalate?" and it responds with data-driven analysis.',
     howItWorks: 'The Copilot reads the current context (page, selected case/entity) and queries the platform\'s data to generate contextual responses. It adapts its suggested prompts based on the page you\'re viewing.',
   },
   {
-    icon: ShieldAlert,
+    icon: MdGppMaybe,
     title: 'AI Threat Briefing',
     location: 'Top of Dashboard page',
     description: 'A daily threat assessment that summarizes everything happening on the platform. Shows the current threat level, highlights the most critical findings, recommends where to focus your time, and predicts emerging risks with confidence scores.',
     howItWorks: 'The AI aggregates all active alerts (by priority and category), all entity risk scores, and open case data. It calculates a threat level, identifies the dominant alert categories, and uses pattern analysis to generate predictions about emerging risks.',
   },
   {
-    icon: Brain,
+    icon: MdPsychology,
     title: 'AI Investigation Intel',
     location: 'Right sidebar when viewing a case in Investigations',
     description: 'Replaces the old static intel panel with dynamic, per-case analysis. Shows risk factors computed from the actual linked entities, AI-generated narrative analysis, detected corruption patterns, and prioritized recommendations for next steps.',
     howItWorks: 'When you select a case, the AI reads all linked entities\' risk scores, examines the case tags (e.g., shell-company, procurement), counts evidence items, and generates custom risk factor breakdowns. Each recommendation is tailored to the specific case type.',
   },
   {
-    icon: Filter,
+    icon: MdFilterAlt,
     title: 'AI Alert Triage',
     location: 'Alerts page — insight cards above the table + triage column',
     description: 'Each alert gets a colored badge (Escalate / Investigate / Monitor / Auto-dismiss) with a confidence score. Hover over any badge to see the AI\'s reasoning. The insight cards above show detected alert clusters — groups of related alerts targeting the same entity or following the same pattern.',
     howItWorks: 'For each alert, the AI combines the alert\'s own risk score (60% weight) with the linked entity\'s risk score (40% weight) to compute a combined score. Based on thresholds, it assigns a triage recommendation. Clusters are detected by grouping alerts that share the same entity or category.',
   },
   {
-    icon: Network,
+    icon: MdHub,
     title: 'AI Network Pattern Detection',
     location: 'Network Graph page — right panel when no node is selected',
     description: 'Scans the entire network graph to find patterns invisible to the naked eye: hub entities with the most connections, tightly connected clusters of high-risk nodes, chains between government officials and companies, and suspicious low-confidence inferred connections.',
@@ -55,16 +58,24 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6 max-w-3xl">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
-        <p className="text-sm text-muted-foreground">Manage your account and platform preferences</p>
-      </div>
+      <FadeIn direction="none">
+        <div>
+          <BlurText
+            text="Settings"
+            className="text-2xl font-bold tracking-tight"
+            delay={80}
+            animateBy="letters"
+          />
+          <p className="text-sm text-muted-foreground">Manage your account and platform preferences</p>
+        </div>
+      </FadeIn>
 
       {/* Profile */}
+      <FadeIn direction="up" delay={0.05}>
       <Card>
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
-            <User size={18} /> Profile
+            <MdPerson size={18} /> Profile
           </CardTitle>
           <CardDescription>Your account information</CardDescription>
         </CardHeader>
@@ -102,11 +113,14 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
+      </FadeIn>
+
       {/* Appearance */}
+      <FadeIn direction="up" delay={0.1}>
       <Card>
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
-            <Palette size={18} /> Appearance
+            <MdPalette size={18} /> Appearance
           </CardTitle>
           <CardDescription>Customize the platform look and feel</CardDescription>
         </CardHeader>
@@ -133,11 +147,14 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
+      </FadeIn>
+
       {/* Notifications */}
+      <FadeIn direction="up" delay={0.15}>
       <Card>
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
-            <Bell size={18} /> Notifications
+            <MdNotifications size={18} /> Notifications
           </CardTitle>
           <CardDescription>Configure how you receive alerts</CardDescription>
         </CardHeader>
@@ -161,11 +178,14 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
+      </FadeIn>
+
       {/* Security */}
+      <FadeIn direction="up" delay={0.2}>
       <Card>
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
-            <Shield size={18} /> Security
+            <MdShield size={18} /> Security
           </CardTitle>
           <CardDescription>Account security settings</CardDescription>
         </CardHeader>
@@ -192,11 +212,14 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
+      </FadeIn>
+
       {/* AI Intelligence — How It Works */}
+      <FadeIn direction="up" delay={0.25}>
       <Card className="border-primary/20">
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
-            <Sparkles size={18} className="text-primary" /> AI Intelligence
+            <MdAutoAwesome size={18} className="text-primary" /> AI Intelligence
           </CardTitle>
           <CardDescription>
             How PolitiTrace&apos;s Agentic AI works and what each feature does
@@ -206,7 +229,7 @@ export default function SettingsPage() {
           {/* Overview */}
           <div className="rounded-lg bg-primary/5 border border-primary/20 p-4 space-y-3">
             <h3 className="text-sm font-semibold flex items-center gap-2">
-              <Bot size={16} className="text-primary" />
+              <MdSmartToy size={16} className="text-primary" />
               What is Agentic AI?
             </h3>
             <p className="text-sm leading-relaxed">
@@ -232,17 +255,17 @@ export default function SettingsPage() {
           <div className="rounded-lg bg-muted/50 p-4 space-y-2">
             <h4 className="text-sm font-semibold">How do I know what&apos;s AI-generated?</h4>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Every AI-generated element is marked with a <Sparkles size={10} className="inline text-primary" /> sparkle icon or labeled &quot;AI&quot;. AI suggestions are <strong>recommendations</strong> — they help you prioritize and understand, but you make the final decisions. All analysis runs on platform data only; nothing is sent externally.
+              Every AI-generated element is marked with a <MdAutoAwesome size={10} className="inline text-primary" /> sparkle icon or labeled &quot;AI&quot;. AI suggestions are <strong>recommendations</strong> — they help you prioritize and understand, but you make the final decisions. All analysis runs on platform data only; nothing is sent externally.
             </p>
           </div>
 
           {/* Keyboard shortcut */}
           <div className="flex items-center gap-3 rounded-lg border border-primary/20 bg-primary/5 p-3">
-            <Keyboard size={20} className="text-primary shrink-0" />
+            <MdKeyboard size={20} className="text-primary shrink-0" />
             <div>
               <p className="text-sm font-medium">Quick Access: AI Copilot</p>
               <p className="text-xs text-muted-foreground">
-                Press <kbd className="mx-0.5 rounded bg-muted px-1.5 py-0.5 font-mono text-[10px] border">Ctrl</kbd> + <kbd className="mx-0.5 rounded bg-muted px-1.5 py-0.5 font-mono text-[10px] border">J</kbd> from any page to open the AI Copilot chat. Or click the floating <Bot size={10} className="inline" /> button at the bottom-right.
+                Press <kbd className="mx-0.5 rounded bg-muted px-1.5 py-0.5 font-mono text-[10px] border">Ctrl</kbd> + <kbd className="mx-0.5 rounded bg-muted px-1.5 py-0.5 font-mono text-[10px] border">J</kbd> from any page to open the AI Copilot chat. Or click the floating <MdSmartToy size={10} className="inline" /> button at the bottom-right.
               </p>
             </div>
           </div>
@@ -262,7 +285,7 @@ export default function SettingsPage() {
                       <h4 className="text-sm font-semibold">{feature.title}</h4>
                     </div>
                     <p className="text-[11px] text-muted-foreground flex items-center gap-1">
-                      <ArrowRight size={10} />
+                      <MdArrowForward size={10} />
                       <strong>Where:</strong> {feature.location}
                     </p>
                     <p className="text-xs leading-relaxed">{feature.description}</p>
@@ -300,6 +323,7 @@ export default function SettingsPage() {
           </div>
         </CardContent>
       </Card>
+      </FadeIn>
     </div>
   );
 }

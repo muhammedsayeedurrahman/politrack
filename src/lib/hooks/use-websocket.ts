@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useCallback } from 'react';
-import { alertService } from '@/services/alert-service';
+import { alertApi } from '@/services/api/alert-api';
 import { useNotificationStore } from '@/stores/notification-store';
 import { Alert } from '@/types';
 
@@ -31,15 +31,16 @@ export function useWebSocket({ enabled = true, interval = 20000, onNewAlert }: U
     const randomInterval = () => interval + Math.random() * interval * 0.5;
 
     function tick() {
-      const alert = alertService.simulateNewAlert();
-      addNotification({
-        title: alert.title,
-        message: alert.description,
-        priority: alert.priority,
-        timestamp: alert.timestamp,
-        alertId: alert.id,
+      alertApi.simulateNewAlert().then((alert) => {
+        addNotification({
+          title: alert.title,
+          message: alert.description,
+          priority: alert.priority,
+          timestamp: alert.timestamp,
+          alertId: alert.id,
+        });
+        onNewAlert?.(alert);
       });
-      onNewAlert?.(alert);
 
       // Schedule next with random jitter
       cleanup();
